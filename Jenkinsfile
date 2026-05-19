@@ -12,14 +12,9 @@ pipeline {
         stage("SonarQube Analysis") {
             steps {
                 withSonarQubeEnv("SonarQube") {
-                    withEnv(["PATH+=SONAR=/Users/shawn/.jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarScanner/bin"]) {
-                        sh """
-                            sonar-scanner \
-                            -Dsonar.projectKey=student-task-tracker \
-                            -Dsonar.projectName=student-task-tracker \
-                            -Dsonar.sources=. \
-                            -Dsonar.exclusions=**/node_modules/**
-                        """
+                    script {
+                        def scannerHome = tool "SonarScanner"
+                        sh ""${scannerHome}/bin/sonar-scanner" -Dsonar.projectKey=student-task-tracker -Dsonar.projectName="Student Task Tracker" -Dsonar.sources=. -Dsonar.exclusions=**/node_modules/**"
                     }
                 }
             }
