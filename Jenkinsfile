@@ -2,60 +2,41 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone Repo') {
+        stage("Clone Repo") {
             steps {
-                echo 'Cloning repository...'
+                echo "Cloning from GitHub..."
                 checkout scm
             }
         }
 
-        stage('Build Backend') {
+        stage("Docker Build") {
             steps {
-                echo 'Installing backend dependencies...'
-                dir('backend') {
-                    sh 'npm install'
-                }
+                echo "Building Docker images..."
+                sh "docker-compose build"
             }
         }
 
-        stage('Build Frontend') {
+        stage("Docker Run") {
             steps {
-                echo 'Frontend is static — no build step needed.'
-                dir('frontend') {
-                    sh 'ls -la'
-                }
+                echo "Stopping old containers and starting fresh..."
+                sh "docker-compose down || true"
+                sh "docker-compose up -d"
             }
         }
 
-        stage('Docker Build') {
+        stage("Done") {
             steps {
-                echo 'Building Docker images...'
-                sh 'docker-compose build'
-            }
-        }
-
-        stage('Docker Run') {
-            steps {
-                echo 'Starting containers...'
-                sh 'docker-compose up -d'
-            }
-        }
-
-        stage('Done') {
-            steps {
-                echo 'App is running!'
-                echo 'Frontend: http://localhost:8081'
-                echo 'Backend API: http://localhost:5000/tasks'
+                echo "============================="
+                echo "App is live!"
+                echo "Frontend : http://localhost:8081"
+                echo "Backend  : http://localhost:5001/tasks"
+                echo "============================="
             }
         }
     }
 
     post {
-        failure {
-            echo 'Build failed. Check the logs above.'
-        }
-        success {
-            echo 'Pipeline completed successfully!'
-        }
+        failure { echo "Build failed. Check logs above." }
+        success { echo "Pipeline completed successfully!" }
     }
 }
