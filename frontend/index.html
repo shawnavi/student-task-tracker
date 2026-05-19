@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Task Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📚 Student Task Tracker</h1>
+      <p>Manage your assignments and tasks</p>
+    </header>
+
+    <div class="add-form">
+      <input type="text" id="taskTitle" placeholder="Task title (e.g. Submit assignment)" />
+      <input type="text" id="taskSubject" placeholder="Subject (e.g. DevOps)" />
+      <button onclick="addTask()">+ Add Task</button>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div id="taskList" class="task-list"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
