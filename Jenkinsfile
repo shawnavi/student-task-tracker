@@ -1,51 +1,52 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven-3'
+    }
+
     stages {
-        stage("Clone Repo") {
+        stage('Clone Repo') {
             steps {
-                echo "Cloning from GitHub..."
+                echo 'Cloning from GitHub...'
                 checkout scm
             }
         }
 
-        stage("SonarQube Analysis") {
+        stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv("SonarQube") {
-                    script {
-                        def scannerHome = tool "SonarScanner"
-                        sh ""${scannerHome}/bin/sonar-scanner" -Dsonar.projectKey=student-task-tracker -Dsonar.projectName="Student Task Tracker" -Dsonar.sources=. -Dsonar.exclusions=**/node_modules/**"
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('SonarQube') {
+                        sh "${scannerHome}/bin/sonar-scanner"
                     }
                 }
             }
         }
 
-        stage("Docker Build") {
+        stage('Docker Build') {
             steps {
-                echo "Building Docker images..."
-                sh "docker-compose build"
+                sh 'docker-compose build'
             }
         }
 
-        stage("Docker Run") {
+        stage('Docker Run') {
             steps {
-                sh "docker-compose down || true"
-                sh "docker-compose up -d"
+                sh 'docker-compose down || true'
+                sh 'docker-compose up -d'
             }
         }
 
-        stage("Done") {
+        stage('Done') {
             steps {
-                echo "============================="
-                echo "App live at http://localhost:8081"
-                echo "SonarQube at http://localhost:9000"
-                echo "============================="
+                echo 'App live at http://localhost:8081'
+                echo 'SonarQube at http://localhost:9000'
             }
         }
     }
 
     post {
-        failure { echo "Build failed. Check logs above." }
-        success { echo "Pipeline completed successfully!" }
+        failure { echo 'Build failed. Check logs above.' }
+        success { echo 'Pipeline completed successfully!' }
     }
 }
