@@ -9,6 +9,22 @@ pipeline {
             }
         }
 
+        stage("SonarQube Analysis") {
+            steps {
+                withSonarQubeEnv("SonarQube") {
+                    withEnv(["PATH+=SONAR=/Users/shawn/.jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarScanner/bin"]) {
+                        sh """
+                            sonar-scanner \
+                            -Dsonar.projectKey=student-task-tracker \
+                            -Dsonar.projectName=student-task-tracker \
+                            -Dsonar.sources=. \
+                            -Dsonar.exclusions=**/node_modules/**
+                        """
+                    }
+                }
+            }
+        }
+
         stage("Docker Build") {
             steps {
                 echo "Building Docker images..."
@@ -18,7 +34,6 @@ pipeline {
 
         stage("Docker Run") {
             steps {
-                echo "Stopping old containers and starting fresh..."
                 sh "docker-compose down || true"
                 sh "docker-compose up -d"
             }
@@ -27,9 +42,8 @@ pipeline {
         stage("Done") {
             steps {
                 echo "============================="
-                echo "App is live!"
-                echo "Frontend : http://localhost:8081"
-                echo "Backend  : http://localhost:5001/tasks"
+                echo "App live at http://localhost:8081"
+                echo "SonarQube at http://localhost:9000"
                 echo "============================="
             }
         }
