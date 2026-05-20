@@ -13,7 +13,17 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('Dependency Check') {
+            steps {
+                echo 'Running dependency audit...'
+                dir('backend') {
+                    sh 'npm install'
+                    sh 'npm audit --audit-level=moderate || true'
+                }
+            }
+        }
+
+        stage('Security Check - SonarQube') {
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner'
@@ -26,12 +36,14 @@ pipeline {
 
         stage('Docker Build') {
             steps {
+                echo 'Building Docker images...'
                 sh 'docker-compose build'
             }
         }
 
         stage('Docker Run') {
             steps {
+                echo 'Starting containers...'
                 sh 'docker-compose down || true'
                 sh 'docker-compose up -d'
             }
