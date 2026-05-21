@@ -13,11 +13,28 @@ pipeline {
             }
         }
 
+        stage('Build Backend') {
+            steps {
+                echo 'Installing backend dependencies...'
+                dir('backend') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                echo 'Frontend is static HTML/CSS/JS - no build step needed.'
+                dir('frontend') {
+                    sh 'ls -la'
+                }
+            }
+        }
+
         stage('Dependency Check') {
             steps {
                 echo 'Running dependency audit...'
                 dir('backend') {
-                    sh 'npm install'
                     sh 'npm audit --audit-level=moderate || true'
                 }
             }
