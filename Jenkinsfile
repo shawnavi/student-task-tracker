@@ -44,6 +44,7 @@ pipeline {
         stage('Docker Run') {
             steps {
                 echo 'Starting containers...'
+                sh 'docker rm -f task-backend task-frontend || true'
                 sh 'docker-compose down || true'
                 sh 'docker-compose up -d'
             }
